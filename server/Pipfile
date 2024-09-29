@@ -5,8 +5,12 @@ name = "pypi"
 
 [packages]
 fastapi = "*"
-u = "*"
 uvicorn = "*"
+sqlalchemy = "*"
+pydantic = "*"
+pydantic-settings = "*"
+asyncpg = "*"
+psycopg2-binary = "*"
 
 [dev-packages]
 

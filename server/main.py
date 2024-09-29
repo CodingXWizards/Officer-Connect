@@ -1,10 +1,38 @@
+import logging
+
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from contextlib import asynccontextmanager
 
-app = FastAPI()
+from middleware.db_session_middleware import DBSessionMiddleware
+from db.session import engine, Base
 
-@app.get('/')
-def hello():
-    return {'mesg': 'hello'}
+logging.basicConfig(level=logging.INFO, format='%(levelprefix)s: \t %(message)s')
+logger = logging.getLogger('uvicorn')
+
+@asynccontextmanager
+async def lifespan(fastapi: FastAPI):
+    logger.info("Connecting to PostgreSQL")
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+        logger.info("Connected to PostgreSQL")
+    yield
+
+app = FastAPI(lifespan=lifespan)
+
+origins = [
+    "http://localhost:5173"
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+app.add_middleware(DBSessionMiddleware)
 
 if __name__ == '__main__':
     import uvicorn

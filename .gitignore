@@ -11,6 +11,9 @@ lerna-debug.log*
 node_modules
 .venv
 
+# Environment Variables
+.env
+
 # Builds
 dist
 dist-ssr
