@@ -7,10 +7,13 @@ name = "pypi"
 fastapi = "*"
 uvicorn = "*"
 sqlalchemy = "*"
-pydantic = "*"
 pydantic-settings = "*"
 asyncpg = "*"
 psycopg2-binary = "*"
+passlib = "*"
+bcrypt = "*"
+python-jose = "*"
+pydantic = {extras = ["email"], version = "*"}
 
 [dev-packages]
 

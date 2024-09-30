@@ -6,6 +6,7 @@ from contextlib import asynccontextmanager
 
 from middleware.db_session_middleware import DBSessionMiddleware
 from db.session import engine, Base
+from routes import router
 
 logging.basicConfig(level=logging.INFO, format='%(levelprefix)s: \t %(message)s')
 logger = logging.getLogger('uvicorn')
@@ -33,6 +34,7 @@ app.add_middleware(
 )
 
 app.add_middleware(DBSessionMiddleware)
+app.include_router(router, prefix='/api')
 
 if __name__ == '__main__':
     import uvicorn
