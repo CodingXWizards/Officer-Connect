@@ -22,5 +22,5 @@ class User(Base):
             "name": self.name,
             "email": self.email,
             "designation": self.designation,
-            "phone_number": self.phone_number
+            "phoneNumber": self.phone_number
         }
