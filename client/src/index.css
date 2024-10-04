@@ -5,12 +5,12 @@
 @tailwind utilities;
 
 * {
-    @apply font-poppins
+    @apply font-poppins text-gray-800
 }
 
 main {
     height: calc(100vh - 4rem);
-    @apply px-10 py-8
+    @apply p-8
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -42,10 +42,32 @@ h6 {
 }
 
 input:-webkit-autofill {
-    color: #333333; /* Text color */
-    transition: background-color 5000s ease-in-out 0s; /* Prevents flashing */
+    color: #333333;
+    /* Text color */
+    transition: background-color 5000s ease-in-out 0s;
+    /* Prevents flashing */
 }
 
 input:-webkit-autofill::first-line {
-    color: #333333; /* Ensure the correct text color */
+    color: #333333;
+    /* Ensure the correct text color */
+}
+
+input[type="date"]::-webkit-datetime-edit {
+    color: transparent;
+    /* Hide default placeholder text */
+}
+
+input[type="date"]::-webkit-datetime-edit-year-field,
+input[type="date"]::-webkit-datetime-edit-month-field,
+input[type="date"]::-webkit-datetime-edit-day-field {
+    color: black;
+    /* Show date value */
+}
+
+.placeholder-text::-webkit-datetime-edit:before {
+    content: "MM/DD/YYYY";
+    /* Custom placeholder */
+    color: gray;
+    /* Placeholder text color */
 }

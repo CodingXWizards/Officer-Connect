@@ -8,11 +8,15 @@ import { useFetch } from "@/hook/useFetch";
 import { cn } from "@/lib/utils";
 import { TbLoader2 } from "react-icons/tb";
 import { useNavigate } from "react-router-dom";
+import { useAppDispatch } from "@/store/hooks";
+import { setIsAuthenticated } from "@/store/features/userSlice";
 
 const SignIn = () => {
     const [email, setEmail] = useState<string>("");
     const [password, setPassword] = useState<string>("");
     const [passwordVisible, setPasswordVisible] = useState<boolean>(false);
+
+    const dispatch = useAppDispatch();
 
     const router = useNavigate();
 
@@ -23,9 +27,10 @@ const SignIn = () => {
 
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        fetchData();
-        if(!error){
+        await fetchData();
+        if (!error) {
             localStorage.setItem('isAuthenticated', 'true');
+            dispatch(setIsAuthenticated(true));
             router('/');
         }
     }
