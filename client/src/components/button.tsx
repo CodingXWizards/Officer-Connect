@@ -12,14 +12,14 @@ const buttonStyles = cva(
                 secondary: "bg-[#F4F4FF] hover:bg-[#F0F0FB]",
                 success: "bg-green-600 hover:bg-opacity-90 text-white",
                 danger: "bg-red-600 hover:bg-opacity-90 text-white",
-                bordered: "bg-white text-blue-500 border border-blue-500 hover:border-blue-600 hover:text-blue-600",
+                bordered: "bg-white text-gray-800 border border-gray-400 hover:border-blue-600 hover:text-blue-600",
                 dark: "bg-[#191C1F] text-white hover:bg-black",
                 light: "bg-white hover:bg-slate-100 text-[#191C1F]",
                 link: "hover:underline px-0 font-normal"
             },
             size: {
                 sm: "text-sm",
-                base: "text-base",
+                base: "text-sm",
                 lg: "text-lg"
             }
         },
