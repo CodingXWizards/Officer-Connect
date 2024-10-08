@@ -32,3 +32,6 @@ __pycache__
 *.njsproj
 *.sln
 *.sw?
+
+# TypeScript build info files
+*.tsbuildinfo
