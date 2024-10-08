@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 
+import { fetchData } from "@/utils/fetch-data";
+
 type UseFetchOptions = {
     method?: string;
     headers?: HeadersInit;
@@ -10,7 +12,7 @@ type UseFetchReturn<T> = {
     data: T | null;
     error: string | null;
     loading: boolean;
-    fetchData: () => void;  // Function to manually trigger the fetch
+    start: () => void;  // Function to manually trigger the fetch
 };
 
 export const useFetch = <T,>(
@@ -22,29 +24,20 @@ export const useFetch = <T,>(
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
 
-    const BASE_API_URL = import.meta.env.VITE_BASE_API_URL
-
     // Fetch function to be called manually or automatically
-    const fetchData = useCallback(async () => {
+    const start = useCallback(async () => {
         setLoading(true);
         setError(null);
 
         try {
-            const response = await fetch(`${BASE_API_URL}${url}`, {
+            const result = await fetchData<T>(url, {
                 method: options?.method || 'GET',
                 headers: options?.headers || {
                     'Content-Type': 'application/json',
                 },
-                credentials: 'include',
                 body: options?.body || null,
             });
 
-            if (!response.ok) {
-                const error = await response.json();
-                throw new Error(error.detail);
-            }
-
-            const result: T = await response.json();
             setData(result);
         } catch (err) {
             setError((err as Error).message);
@@ -56,9 +49,9 @@ export const useFetch = <T,>(
     // Automatically trigger the fetch if immediate is true
     useEffect(() => {
         if (immediate) {
-            fetchData();
+            start();
         }
-    }, [fetchData, immediate]);
+    }, [start, immediate]);
 
-    return { data, error, loading, fetchData };
+    return { data, error, loading, start };
 };
