@@ -9,7 +9,7 @@ interface Props<T> {
     setValue: Dispatch<SetStateAction<T>>;
     Icon?: IconType
     iconClick?: () => void;
-}
+};
 
 export const Input = ({ id, type, label, value, setValue, Icon, iconClick }: Props<any>) => {
     const inputRef = useRef<HTMLInputElement | null>(null);

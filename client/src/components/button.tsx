@@ -1,6 +1,7 @@
 import { cn } from '@/lib/utils'
 import { cva, VariantProps } from 'class-variance-authority';
 import React, { ReactNode } from 'react'
+import { TbLoader2 } from 'react-icons/tb';
 
 
 const buttonStyles = cva(
@@ -32,13 +33,14 @@ const buttonStyles = cva(
 
 interface ButtonProps extends VariantProps<typeof buttonStyles>, React.ButtonHTMLAttributes<HTMLButtonElement> {
     children: ReactNode;
+    isLoading?: boolean;
 }
 
-export const Button = ({ children, size, variant, className, ...props }: ButtonProps) => {
+export const Button = ({ children, size, variant, className, isLoading = false, ...props }: ButtonProps) => {
 
     return (
         <button className={cn(buttonStyles({ variant, size, className }))} {...props}>
-            {children}
+            {isLoading ? <TbLoader2 className="animate-spin mx-auto size-5" /> : children}
         </button>
-    )
-}
+    );
+};

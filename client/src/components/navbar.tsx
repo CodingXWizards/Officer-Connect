@@ -1,30 +1,38 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useFetch } from "@/hook/useFetch";
-
 import { IoNotificationsOutline } from "react-icons/io5";
-import { Dropdown, DropdownArrow, DropdownContent, DropdownItem, DropdownTrigger } from "./dropdown";
+
 import { cn } from "@/lib/utils";
+import { useLoading } from "@/hook/useLoading";
+import { fetchData } from "@/utils/fetch-data";
+
+import { AlertType, useAlert } from "./alerts";
+import { Dropdown, DropdownArrow, DropdownContent, DropdownItem, DropdownTrigger } from "./dropdown";
 
 export const Navbar = () => {
 
     const path = useLocation().pathname;
     const router = useNavigate();
 
-    const { error, fetchData } = useFetch('/api/auth/signout', { method: 'GET' }, false);
+    const { withLoading } = useLoading();
+    const { showAlert } = useAlert();
 
-    const handleLogout = () => {
-        fetchData();
-        if (!error) {
-            router('/signin');
-            localStorage.removeItem('isAuthenticated');
+    const handleLogout = async () => {
+        const response = await withLoading(() => fetchData("/api/auth/signout"))
+
+        if (response.error) {
+            showAlert(response.error, AlertType.ERROR);
+            return;
         }
+
+        router('/signin');
+        localStorage.removeItem('isAuthenticated');
     };
 
     return (
-        path !== '/signin' && <nav className="h-16 px-4 py-2 flex justify-between items-center border-b border-gray-300">
+        <nav className="h-16 px-4 py-2 flex justify-between items-center border-b border-gray-300">
             <ul className="flex items-center gap-x-3">
                 <Link to='/' className={cn("font-medium p-2 px-4 hover:bg-blue-100 hover:text-blue-600 rounded-md transition-colors cursor-pointer", path === '/' && 'bg-blue-100 text-blue-600')}>Dashboard</Link>
-                <Link to='/leave' className={cn("font-medium p-2 px-4 hover:bg-blue-100 hover:text-blue-600 rounded-md transition-colors cursor-pointer", path === '/leave' && 'bg-blue-100 text-blue-600')}>Leave</Link>
+                <Link to='/leave' className={cn("font-medium p-2 px-4 hover:bg-blue-100 hover:text-blue-600 rounded-md transition-colors cursor-pointer", path.includes('/leave') && 'bg-blue-100 text-blue-600')}>Leave</Link>
                 <Link to='/performance' className={cn("font-medium p-2 px-4 hover:bg-blue-100 hover:text-blue-600 rounded-md transition-colors cursor-pointer", path === '/performance' && 'bg-blue-100 text-blue-600')}>Performance</Link>
             </ul>
             <ul className="flex items-center gap-x-3">

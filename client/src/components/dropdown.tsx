@@ -1,13 +1,14 @@
-import { cn } from "@/lib/utils";
 import React, { createContext, useContext, useState, ReactNode, useRef, useEffect } from "react";
 import { IoIosArrowDown } from "react-icons/io";
+
+import { cn } from "@/lib/utils";
 
 // Context for managing dropdown state
 interface DropdownContextValue {
     isOpen: boolean;
     toggleDropdown: () => void;
     closeDropdown: () => void;
-}
+};
 
 const DropdownContext = createContext<DropdownContextValue | undefined>(undefined);
 
@@ -22,7 +23,7 @@ const useDropdown = () => {
 // Main Dropdown component
 interface DropdownProps {
     children: ReactNode;
-}
+};
 
 export const Dropdown: React.FC<DropdownProps> = ({ children }) => {
     const [isOpen, setIsOpen] = useState(false);
@@ -41,7 +42,7 @@ export const Dropdown: React.FC<DropdownProps> = ({ children }) => {
 interface DropdownTriggerProps {
     children: ReactNode;
     className?: string;
-}
+};
 
 export const DropdownTrigger: React.FC<DropdownTriggerProps> = ({ children, className }) => {
     const { toggleDropdown } = useDropdown();
@@ -53,7 +54,7 @@ export const DropdownTrigger: React.FC<DropdownTriggerProps> = ({ children, clas
 
     return (
         <button
-        type="button"
+            type="button"
             className={cn("p-2 rounded-md focus:outline-none flex gap-x-2 items-center", className)}
             onClick={handleClick}
         >
@@ -74,7 +75,7 @@ export const DropdownArrow = () => {
 interface DropdownContentProps {
     children: ReactNode;
     className?: string;
-}
+};
 
 export const DropdownContent: React.FC<DropdownContentProps> = ({ children, className }) => {
     const { isOpen, closeDropdown } = useDropdown();
@@ -115,15 +116,20 @@ export const DropdownContent: React.FC<DropdownContentProps> = ({ children, clas
 interface DropdownItemProps {
     children: ReactNode;
     className?: string;
+    active?: boolean;
     onClick?: () => void;
-}
+};
 
-export const DropdownItem: React.FC<DropdownItemProps> = ({ children, onClick, className }) => {
+export const DropdownItem: React.FC<DropdownItemProps> = ({ children, onClick, className, active = false }) => {
     const { closeDropdown } = useDropdown();
 
     return (
         <div
-            className={cn("px-4 py-2 cursor-pointer hover:bg-gray-100", className)}
+            className={cn(
+                "px-4 py-2 cursor-pointer hover:bg-gray-100",
+                active && "bg-blue-100 hover:bg-blue-100 text-blue-700",
+                className
+            )}
             onClick={() => { onClick && onClick(); closeDropdown(); }}
         >
             {children}
