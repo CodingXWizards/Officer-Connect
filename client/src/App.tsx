@@ -1,22 +1,24 @@
 import { Routes, Route, useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
+
+import { User } from '@/types/user';
+import { useFetch } from '@/hook/useFetch';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { setIsAuthenticated, setUser } from '@/store/features/userSlice';
 
 import SignIn from "@/page/signin";
+import MainLayout from '@/layouts/main-layout';
 import Dashboard from "@/page/dashboard";
-import { Navbar } from './components/navbar';
-import { useEffect } from 'react';
-import { useAppDispatch, useAppSelector } from './store/hooks';
-import { setIsAuthenticated, setUser } from './store/features/userSlice';
-import { useFetch } from './hook/useFetch';
-import { User } from './types/user';
-import { Sidebar } from './components/sidebar';
-import Leave from './page/leave';
+import Leave from '@/page/leave';
+import LeaveApplication from '@/page/leave/application';
+import Performance from '@/page/performance';
 
 const App = () => {
 
   const { isAuthenticated } = useAppSelector(state => state.user);
   const dispatch = useAppDispatch();
 
-  const { data, fetchData } = useFetch<User>('/api/user/', { method: 'GET' }, false);
+  const { data, start, error } = useFetch<User>('/api/user/', { method: 'GET' }, false);
   const navigate = useNavigate();
 
   // Check authentication status on page load
@@ -32,7 +34,7 @@ const App = () => {
   // Fetch user data if authenticated
   useEffect(() => {
     if (isAuthenticated && !data) {
-      fetchData();
+      start();
     }
   }, [isAuthenticated]);
 
@@ -43,20 +45,24 @@ const App = () => {
     }
   }, [data]);
 
+  useEffect(()=>{
+    if(error){
+      navigate('/signin');
+    }
+  }, [error]);
+
   return (
-    <div className='flex'>
-      <Sidebar />
-      <div className='flex-grow'>
-        <Navbar />
-        <Routes>
-          <Route path="/*" >
-            <Route path='' element={<Dashboard />} />
-            <Route path='leave' element={<Leave />} />
-          </Route>
-          <Route path="/signin" element={<SignIn />} />
-        </Routes>
-      </div>
-    </div>
+    <Routes>
+      <Route path="/*" element={<MainLayout />}>
+        <Route path='' element={<Dashboard />} />
+        <Route path='leave' >
+          <Route path='' element={<Leave />} />
+          <Route path='application' element={<LeaveApplication />} />
+        </Route>
+        <Route path='performance' element={<Performance />} />
+      </Route>
+      <Route path="/signin" element={<SignIn />} />
+    </Routes>
   );
 };
 

@@ -1,11 +1,15 @@
-import './dashboard.module.css';
+import styles from './dashboard.module.css';
 
-import { useAppSelector } from "@/store/hooks"
+import { useAppSelector } from "@/store/hooks";
 
 const Dashboard = () => {
   const { user } = useAppSelector(state => state.user);
+
+  if(!user)
+    return <main></main>;
+
   return (
-    user && <main className='flex flex-col gap-y-4'>
+    <main id={styles.leaveDashboard} className='flex flex-col gap-y-4'>
       <h3>Profile</h3>
       <header className="flex gap-x-5">
         <img src="/police.png" alt="police" className="size-60 bg-gray-200 rounded-lg p-2" />
@@ -33,7 +37,7 @@ const Dashboard = () => {
         </section>
       </header>
     </main>
-  )
-}
+  );
+};
 
-export default Dashboard
+export default Dashboard;
