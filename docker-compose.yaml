@@ -1,5 +1,24 @@
 version: '3.8'
 services:
+  reverse-proxy:
+    image: traefik:v3.1
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
+      - "--certificatesresolvers.myresolver.acme.email=vipingautamooooo16@gmail.com"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+
+    ports:
+      - "443:443"
+      - "8080:8080"
+    volumes:
+      - letsencrypt:/letsencrypt
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - web
+
   server:
     build: ./server
     ports:
@@ -9,7 +28,17 @@ services:
     env_file: ./server/.env
     depends_on:
       - db
-  
+    deploy:
+      replicas: 3  # Number of instances you want
+      restart_policy:
+        condition: on-failure
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.server.rule=Host(`api.codingxwizard.tech`)"
+      - "traefik.http.routers.api.entrypoints=websecure"
+      - "traefik.http.routers.api.tls.certresolver=myresolver"
+    networks:
+      - web
   db:
     image: postgres:13
     ports:
@@ -17,14 +46,30 @@ services:
     env_file: .env
     volumes:
       - postgres_data:/var/lib/postgresql/data
-  
+    networks:
+      - web
+
   client:
     build: ./client
-    ports:
-      - "5173:5173"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.client.rule=Host(`codingxwizard.tech`)"
+      - "traefik.http.routers.client.entrypoints=websecure"
+      - "traefik.http.routers.client.tls.certresolver=myresolver"
+    networks:
+      - web
     env_file: ./client/.env
     depends_on:
       - server
-  
+    deploy:
+      replicas: 3  # Number of instances you want
+      restart_policy:
+        condition: on-failure
+
 volumes:
   postgres_data:
+  letsencrypt:
+
+networks:
+  web:
+    external: false
