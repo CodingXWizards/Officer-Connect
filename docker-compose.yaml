@@ -20,12 +20,9 @@ services:
       - web
 
   server:
-    build: ./server
-    ports:
-      - "8000:8000"
+    image: rajasgh18/officer-connect:server-v0.1.0
     environment:
       - POSTGRES_SERVER=db
-    env_file: ./server/.env
     depends_on:
       - db
     deploy:
@@ -50,7 +47,7 @@ services:
       - web
 
   client:
-    build: ./client
+    image: rajasgh18/officer-connect:client-v0.1.0
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.client.rule=Host(`codingxwizard.tech`)"
@@ -58,7 +55,6 @@ services:
       - "traefik.http.routers.client.tls.certresolver=myresolver"
     networks:
       - web
-    env_file: ./client/.env
     depends_on:
       - server
     deploy:
