@@ -1,16 +1,30 @@
 version: '3.8'
 services:
+  watchtower:
+    image: containrrr/watchtower
+    command:
+      - "--label-enable"
+      - "--interval"
+      - "30"
+      - "--rolling-restart"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
   reverse-proxy:
     image: traefik:v3.1
     command:
       - "--api.insecure=true"
       - "--providers.docker"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
       - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
       - "--certificatesresolvers.myresolver.acme.email=vipingautamooooo16@gmail.com"
       - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
-
+      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
     ports:
+      - "80:80"
       - "443:443"
       - "8080:8080"
     volumes:
@@ -26,16 +40,18 @@ services:
     depends_on:
       - db
     deploy:
-      replicas: 3  # Number of instances you want
+      replicas: 3
       restart_policy:
         condition: on-failure
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.server.rule=Host(`api.codingxwizard.tech`)"
-      - "traefik.http.routers.api.entrypoints=websecure"
-      - "traefik.http.routers.api.tls.certresolver=myresolver"
+      - "traefik.http.routers.server.entrypoints=websecure"
+      - "traefik.http.routers.server.tls.certresolver=myresolver"
+      - "com.centurylinklabs.watchtower.enable=true"
     networks:
       - web
+
   db:
     image: postgres:13
     ports:
@@ -53,18 +69,21 @@ services:
       - "traefik.http.routers.client.rule=Host(`codingxwizard.tech`)"
       - "traefik.http.routers.client.entrypoints=websecure"
       - "traefik.http.routers.client.tls.certresolver=myresolver"
-    networks:
-      - web
+      - "com.centurylinklabs.watchtower.enable=true"
+
     depends_on:
       - server
     deploy:
-      replicas: 3  # Number of instances you want
+      replicas: 3
       restart_policy:
         condition: on-failure
+    networks:
+      - web
 
 volumes:
   postgres_data:
   letsencrypt:
+
 
 networks:
   web:
